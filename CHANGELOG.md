@@ -2,6 +2,11 @@
 
 ## Changelog
 
+### v0.3.0
+- untested support for other `dmenu`-like implementations
+- untested support for other `wtype`-like implementations
+- support for non-wayland environments (by not hard-depending on `fuzzel` and `wtype`)
+
 ### v0.2.0
 - add numbered versioning and `-v|--version` option
 - support for more secret types and fields [✔]

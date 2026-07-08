@@ -23,13 +23,22 @@ Without cache, each call would take up to 3s to display the menu.
 
 See Security#Cache for details.
 
+
 ## Dependencies
 
-All requirements are hardcoded:
-  - Wayland and `wtype`
+Hardcoded requirements:
   - `jq`
   - `bash` v5+
-  - `fuzzel`
+
+Recommended tools:
+  - Wayland and
+    - `fuzzel`
+    - `wtype`
+
+If you want to use other menu or type commands, see Config params.
+Tested only with `fuzzel` and `wtype`, ymmv, compatibility reports
+appreciated.
+
 
 ## Configuration
 
@@ -43,6 +52,11 @@ if XDG_CONFIG_HOME is not defined.
 
 `PAT`: personal access token, optional
 
+`menu_command`: command to display the menu, defaults to
+`fuzzel --dmenu --index --hide-before-typing` (no quotes).
+
+`type_command`: command to type the selected field, defaults to `wtype` (no quotes).
+
 ### How to obtain PAT and enable access to your vault
 
 ```
@@ -52,6 +66,7 @@ pass-cli pat create --name <token_name> --expiration 1y
 
 pass-cli pat access grant --vault-name <vault_name> --role viewer --personal-access-token-name <token_name>
 ```
+
 
 ## Security notes
 
@@ -82,34 +97,9 @@ Vault share_id, in `$XDG_STATE_HOME/ppcmw/*`.
 
 ### TODO
 
-- support for other `dmenu`-like implementations
-- support for other `wtype`-like implementations
-- support for non-wayland environments
 - support for search over more metadata, not just the title;
   - security considerations: needs local cache to include the other fields
 - advanced support for multiple fields, possibly via a follow-up submenu
 - support for typing `username|email<TAB>password<RETURN>` to autosubmit
   web forms
 - security review
-
-## Changelog
-
-### v0.2.0
-- support for more secret types and fields [✔]
-
-Primitive support for `email`, `username` and `password` fields:
-each secret is displayed three times with the option to pick
-one of the above fields, password comes first but fuzzel may
-cache the entries so the order is not guaranteed
-
-### early versions
-- optimize performance [✔]
-- introduce caching [✔]
-
-Cache for items list implemented, stored in plaintext. Rebuilds cache
-in background with each invocation but doesn't wait for it to build
-to display the menu _unless_ the cache is empty (i.e. first start).
-
-A few minor performance tweaks introduced:
-  - use cached `--share-id` for Vault identification - slightly faster than vault name
-  - a couple of async calls, related to cache population

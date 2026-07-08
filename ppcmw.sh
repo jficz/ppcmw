@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION=0.2.0
+VERSION=0.3.0
 PROGNAME=ppcmw
 
 # basic functions
@@ -39,6 +39,11 @@ done
 
 # defaults
 _vault=${vault_name:-Personal}
+_menu=${menu_command:-fuzzel --dmenu --index --hide-before-typing}
+_type=${type_command:-wtype}
+
+[[ -x $(command -v ${_menu%% *}) ]] || die "Menu binary not found: ${_menu%% *}"
+[[ -x $(command -v ${_type%% *}) ]] || die "Type binary not found: ${_type%% *}"
 
 
 # runtime functions
@@ -97,7 +102,7 @@ while read id; do
   _items_title+=("$title | email")
 done <<< "${state[items_cache]}"
 
-if ret_item_id=$(fuzzel --dmenu --index --hide-before-typing <<< $(printf '%s\n' "${_items_title[@]}")); then
+if ret_item_id=$($_menu <<< $(printf '%s\n' "${_items_title[@]}")); then
   _item_id="${_items_id[$ret_item_id]%;;;*}"
   _item_field="${_items_id[$ret_item_id]##*;;;}"
   case $_item_field in
@@ -106,7 +111,7 @@ if ret_item_id=$(fuzzel --dmenu --index --hide-before-typing <<< $(printf '%s\n'
   esac
   _out=$(call-pass item view --item-id "${_item_id}" --field "$_item_field") \
   || _out=$(call-pass item view --item-id "${_item_id}" --field "$_alt")
-  wtype "$_out"
+  $_type "$_out"
 fi
 
 wait
