@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+VERSION=0.2.0
+PROGNAME=ppcmw
+
 # basic functions
 function log() {
   echo "$*" > /dev/stderr
@@ -9,6 +12,11 @@ function die() {
   log "$*"
   exit 1
 }
+
+if [[ "$1" == "-v" || "$1" == "--version" ]]; then
+  log "$PROGNAME v$VERSION"
+  exit 0
+fi
 
 # config
 _conf="${XDG_CONFIG_HOME:-"$HOME/.config"}/ppcmw.conf"
@@ -81,12 +89,24 @@ declare -a _items_title _items_id
 
 while read id; do
   read title
-  _items_id+=("$id")
-  _items_title+=("$title")
+  _items_id+=("$id;;;password")
+  _items_id+=("$id;;;username")
+  _items_id+=("$id;;;email")
+  _items_title+=("$title | password")
+  _items_title+=("$title | username")
+  _items_title+=("$title | email")
 done <<< "${state[items_cache]}"
 
-if ret_item_id=$(fuzzel --dmenu --index <<< $(printf '%s\n' "${_items_title[@]}")); then
-  wtype $(call-pass item view --item-id "${_items_id[$ret_item_id]}" | jq -r '.item.content.content.Login.password')
+if ret_item_id=$(fuzzel --dmenu --index --hide-before-typing <<< $(printf '%s\n' "${_items_title[@]}")); then
+  _item_id="${_items_id[$ret_item_id]%;;;*}"
+  _item_field="${_items_id[$ret_item_id]##*;;;}"
+  case $_item_field in
+    username) _alt=email;;
+    email)    _alt=username;;
+  esac
+  _out=$(call-pass item view --item-id "${_item_id}" --field "$_item_field") \
+  || _out=$(call-pass item view --item-id "${_item_id}" --field "$_alt")
+  wtype "$_out"
 fi
 
 wait

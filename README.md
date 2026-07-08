@@ -2,12 +2,17 @@
 
 ## Status
 
-early prototype, anything can change in the future
+alpha, anything can change in the future
 
 ## Features
 
-Show `dmenu`-like menu with item titles and types the password
-associated with the selected one, akin to [`passmenu`](https://git.zx2c4.com/password-store/tree/contrib/dmenu/README.md).
+Show `dmenu`-like menu with item titles and types the selected field
+associated with the selected item, somewhat akin to
+[`passmenu`](https://git.zx2c4.com/password-store/tree/contrib/dmenu/README.md).
+
+Allows picking one of `password`, `username` or `email` fields.
+If either `username` or `email` doesn't exist and is picked, falls back
+to the other one. If neither exists, returns nothing.
 
 Only considers items of type `login` and state `active`.
 
@@ -35,6 +40,7 @@ if XDG_CONFIG_HOME is not defined.
 ### Config params
 
 `vault_name`: name of the vault items should be pulled from
+
 `PAT`: personal access token, optional
 
 ### How to obtain PAT and enable access to your vault
@@ -79,14 +85,26 @@ Vault share_id, in `$XDG_STATE_HOME/ppcmw/*`.
 - support for other `dmenu`-like implementations
 - support for other `wtype`-like implementations
 - support for non-wayland environments
-- support for more secret types and fields
-- support for search over more metadata, not just the title
+- support for search over more metadata, not just the title;
+  - security considerations: needs local cache to include the other fields
+- advanced support for multiple fields, possibly via a follow-up submenu
+- support for typing `username|email<TAB>password<RETURN>` to autosubmit
+  web forms
 - security review
 
-### Implemented
+## Changelog
 
-- ~optimize performance~ [✔]
-- ~possibly introduce some caching~ [✔]
+### v0.2.0
+- support for more secret types and fields [✔]
+
+Primitive support for `email`, `username` and `password` fields:
+each secret is displayed three times with the option to pick
+one of the above fields, password comes first but fuzzel may
+cache the entries so the order is not guaranteed
+
+### early versions
+- optimize performance [✔]
+- introduce caching [✔]
 
 Cache for items list implemented, stored in plaintext. Rebuilds cache
 in background with each invocation but doesn't wait for it to build
