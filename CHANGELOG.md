@@ -2,6 +2,9 @@
 
 ## Changelog
 
+### v0.3.1
+- add LICENSE: [BW-NW v1](https://github.com/jficz/beerware-based-licence)
+
 ### v0.3.0
 - untested support for other `dmenu`-like implementations
 - untested support for other `wtype`-like implementations

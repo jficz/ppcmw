@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-VERSION=0.3.0
+VERSION=0.3.1
 PROGNAME=ppcmw
+LICENSE=BW-NWv1
 
 # basic functions
 function log() {
